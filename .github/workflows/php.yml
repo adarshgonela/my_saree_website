@@ -11,14 +11,17 @@ permissions:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+    - name: Set up PHP with extensions
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1' # Specify the PHP version you need
+        extensions: mbstring, xml, bcmath, gd # List any PHP extensions you need
 
     - name: Cache Composer packages
       id: composer-cache
@@ -29,11 +32,20 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-
 
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
+    - name: Run PHP scripts
+      run: |
+        php Admin/index.php # Replace with your PHP file path
+        # You can add more commands here to run additional PHP files or scripts
 
-    # - name: Run test suite
-    #   run: composer run-script test
+    - name: Run tests
+      run: composer run-script test
+      
+                        
+            
+      # Make sure to define a "test" script in your composer.json for this to work
