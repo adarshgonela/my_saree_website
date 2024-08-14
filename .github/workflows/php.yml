@@ -1,53 +1,116 @@
-name: PHP Composer
+name: "Composer (php-actions)"
+description: "Use the Composer CLI in your Github Actions."
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+inputs:
+  version:
+    description: "What version of Composer to use"
+    default: latest
+    required: false
 
-permissions:
-  contents: read
+  php_version:
+    description: "What version of PHP to use"
+    default: latest
+    required: false
 
-jobs:
-  build:
-    runs-on: windows-latest
+  php_extensions:
+    description: "Space separated list of extensions to configure with the PHP build"
+    required: false
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  command:
+    description: "Composer command to run"
+    required: true
+    default: install
 
-    - name: Set up PHP with extensions
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.1' # Specify the PHP version you need
-        extensions: mbstring, xml, bcmath, gd # List any PHP extensions you need
+  only_args:
+    description: "Only run the desired command with this args. Ignoring all other provided arguments"
+    required: false
 
-    - name: Set up Composer
-      uses: composer/composer-action@v2
-      with:
-        composer-version: '2' # Use Composer 2
+  interaction:
+    description: "Whether to ask any interactive questions. Values: 'yes' or 'no'"
+    required: false
+    default: no
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+  dev:
+    description: "Whether to install dev packages. Values: 'yes' or 'no'"
+    required: false
+    default: yes
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+  progress:
+    description: "Whether to output download progress"
+    required: false
+    default: no
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+  quiet:
+    description: "Whether to suppress all messages"
+    required: false
+    default: no
 
-    - name: Run PHP scripts
+  args:
+    description: "Optional arguments to pass"
+    required: false
+
+  ssh_key:
+    description: "The private key contents to use for private repositories"
+    required: false
+
+  ssh_key_pub:
+    description: "The public key contents to use for private repositories"
+    required: false
+
+  ssh_domain:
+    description: "The domain to gather SSH public keys for (automatic for github.com, gitlab.com, bitbucket.org)"
+    required: false
+
+  ssh_port:
+    description: Custom port to use in conjunction with ssh_domain
+    required: false
+
+  working_dir:
+    description: "Use the given directory as working directory"
+    required: false
+
+  memory_limit:
+    description: "Sets the composer memory limit"
+    required: false
+
+  container_workdir:
+    description: "Sets the aplication workdir inside container"
+    required: false
+
+outputs:
+  full_command:
+    description: "The full command passed to docker to run"
+    value: ${{ steps.composer_run.outputs.full_command }}
+
+runs:
+  using: "composite"
+  steps:
+    - env:
+        ACTION_VERSION: ${{ inputs.version }}
+        ACTION_PHP_VERSION: ${{ inputs.php_version }}
+        ACTION_PHP_EXTENSIONS: ${{ inputs.php_extensions }}
+        ACTION_TOKEN: ${{ github.token }}
+        ACTION_COMMAND: ${{ inputs.command }}
+        ACTION_ONLY_ARGS: ${{ inputs.only_args }}
+        ACTION_INTERACTION: ${{ inputs.interaction }}
+        ACTION_DEV: ${{ inputs.dev }}
+        ACTION_PROGRESS: ${{ inputs.progress }}
+        ACTION_QUIET: ${{ inputs.quiet }}
+        ACTION_ARGS: ${{ inputs.args }}
+        ACTION_SSH_KEY: ${{ inputs.ssh_key }}
+        ACTION_SSH_KEY_PUB: ${{ inputs.ssh_key_pub }}
+        ACTION_SSH_DOMAIN: ${{ inputs.ssh_domain }}
+        ACTION_SSH_PORT: ${{ inputs.ssh_port }}
+        ACTION_WORKING_DIR: ${{ inputs.working_dir }}
+        ACTION_MEMORY_LIMIT: ${{ inputs.memory_limit }}
+        ACTION_CONTAINER_WORKDIR: ${{ inputs.container_workdir }}
+      id: composer_run
       run: |
-        php path\to\your\script.php # Replace with your PHP file path
-        # You can add more commands here to run additional PHP files or scripts
+        set -e
+        bash <(curl -s https://raw.githubusercontent.com/php-actions/php-build/v2/php-build.bash) composer
+        ${{ github.action_path }}/composer-action.bash
+      shell: bash
 
-    - name: Run tests
-      run: composer run-script test
-      # Make sure to define a "test" script in your composer.json for this to work
+branding:
+  icon: 'package'
+  color: 'purple'
