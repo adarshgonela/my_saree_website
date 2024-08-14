@@ -1,1 +1,75 @@
 db.php
+# PHP Composer dependencies
+/vendor/
+
+# PHPStorm project files
+/.idea/
+
+# NetBeans project files
+/nbproject/
+
+# Eclipse project files
+/.project
+/.settings/
+
+# Sublime Text project files
+/*.sublime-workspace
+/*.sublime-project
+
+# VSCode project files
+/.vscode/
+
+# Node modules
+/node_modules/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Environment configuration files
+.env
+
+# Composer lock file (if you're not committing it)
+composer.lock
+
+# PHPUnit test coverage reports
+/phpunit.result.cache
+/tests/_output/
+
+# Uploads or cache directories
+/uploads/
+cache/
+tmp/
+logs/
+
+# Build artifacts
+/build/
+dist/
+*.zip
+
+# Ignore configuration files with sensitive information
+config/*.yml
+config/*.json
+
+# Ignore .env files with sensitive data
+.env.local
+.env.development
+.env.production
+
+# Ignore database files
+*.sql
+*.sqlite
+
+# Ignore IDE-specific files
+*.iml
+*.swp
+
+# Ignore backup files
+*.bak
+*.orig
+*.save
