@@ -969,6 +969,7 @@ $password="admin";
 
           <?php
             include_once '../conn.php';
+            global $conn;
             $result = $conn->query("SELECT * FROM sarees");
             while ($row = $result->fetch_assoc()) {
             ?>
