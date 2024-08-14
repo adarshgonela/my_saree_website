@@ -40,12 +40,9 @@ jobs:
 
     - name: Run PHP scripts
       run: |
-        php Admin/index.php # Replace with your PHP file path
+        php path\to\your\script.php # Replace with your PHP file path
         # You can add more commands here to run additional PHP files or scripts
 
     - name: Run tests
       run: composer run-script test
-      
-                        
-            
       # Make sure to define a "test" script in your composer.json for this to work
